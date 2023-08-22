@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Profile"
         },
+        resetToken: {
+            type: String,
+        },
+        tokenExpire: {
+            type: Date,
+        },
         appliedJob: [
             {
                 type: mongoose.Schema.Types.ObjectId,
