@@ -7,7 +7,7 @@ require('dotenv').config()
 const PORT = process.env.PORT || 5000
 
 // fetch required modules
-const {connectDB} = require('./config/Database')
+const connectDB = require('./config/Database')
 const {cloudConnect} = require('./config/Cloudinary')
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload')
