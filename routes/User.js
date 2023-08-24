@@ -4,7 +4,8 @@ const express = require('express')
 const router = express.Router()
 
 // import all required controllers and middlewares
-const {login, signup, sendotp} = require('../controllers/Auth')
+const {login, signup, sendotp, changePassword} = require('../controllers/Auth')
+const { createResetToken, resetPassword } = require('../controllers/ResetPassword')
 
 
 // map these with related routes
@@ -14,7 +15,11 @@ router.post('/signup', signup)
 
 router.post('/sendotp', sendotp)
 
+router.put('/changePassword', changePassword)
 
+router.post('/createResetToken', createResetToken)
+
+router.put('/resetPassword', resetPassword)
 
 
 

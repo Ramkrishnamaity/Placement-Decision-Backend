@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
         accountType: {
             type: String,
             enum: ["Admin","Student"],
-            default: 'student',
+            default: 'Student',
             required: true,
         },
         image: {
@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
         tokenExpire: {
             type: Date,
         },
-        appliedJob: [
+        jobs: [ 
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Job"

@@ -16,6 +16,7 @@ exports.cloudConnect = async()=> {
         });  
 
     } catch(error) {
-        console.log("Cloudnary Connection error", error.message)
+        console.log("Cloudnary Connection error")
+        process.exit(1)
     }
 }
