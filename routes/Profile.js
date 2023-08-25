@@ -4,8 +4,8 @@ const express = require('express')
 const router = express.Router()
 
 // import all required controllers and middlewares
-const {auth, isStudent} = require('../middlewares/AuthZ')
-const {updateProfile, deleteProfile, getUserDetails, getAppliedJobs, updateProfilePicture} = require('../controllers/Profile')
+const {auth, isAdmin} = require('../middlewares/AuthZ')
+const {updateProfile, deleteProfile, getUserDetails, updateProfilePicture, getUsers} = require('../controllers/Profile')
 
 
 
@@ -17,10 +17,11 @@ router.delete('/deleteProfile', auth, deleteProfile)
 
 router.get('/getUserDetails', auth, getUserDetails)
 
-router.get('/appliedJobs', auth, isStudent, getAppliedJobs)
-
 router.put('/updateProfilePicture', auth, updateProfilePicture)
 
+
+//  `               *****???????
+router.get('/getUsers', auth, isAdmin, getUsers)
 
 
 

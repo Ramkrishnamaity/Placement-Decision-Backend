@@ -3,6 +3,9 @@
 // import required modules
 const User = require("../models/User");
 const mailSender = require("../utils/mailSender");
+const crypto = require('crypto')
+const bcrypt = require('bcrypt')
+const {resetPasswordMail} = require('../mailTemplates/ResetPasswordMail')
 
 
 
@@ -19,7 +22,7 @@ exports.createResetToken = async(req, res) => {
 		}
 
         // create token and add it to user's document
-        const token = crypto.randomUUID()
+        const token = crypto.randomBytes(20).toString('hex')
 
         const updatedUser = await User.findOneAndUpdate(
             {email: email},
@@ -36,11 +39,12 @@ exports.createResetToken = async(req, res) => {
         await mailSender(
             email,
             "Password reset mail",
-            `Your Link for email verification is ${url}. Please click this url to reset your password.`
-        )
+            resetPasswordMail(url, `${user.firstName} ${user.lastName}`)
+            )
 
         res.status(200).json({
 			success: true,
+            token: token,
 			message:
 				"Email Sent Successfully, Please Check Your Email to Continue Further",
 		});
@@ -77,14 +81,14 @@ exports.resetPassword = async(req, res) => {
 		}
 
         // if token time execced
-        if(userDetails.tokenExpire > Date.now()){
+        if(!(userDetails.tokenExpire > Date.now())){
             return res.status(403).json({
 				success: false,
 				message: `Token is Expired, Please Regenerate Your Token`,
 			});
         }
 
-        let hashedPassword = bcrypt.hash(password, 10)
+        let hashedPassword = await bcrypt.hash(password, 10)
 
         // update on db
         await User.findOneAndUpdate(

@@ -15,7 +15,7 @@ router.post('/createJob', auth, isAdmin, createJob)
 
 router.put('/updateJob', updateJob)
 
-router.get('/getJobs', auth, isAdmin, getJobs)
+router.get('/getJobs', auth, getJobs)
 
 router.delete('/deleteJob', auth, isAdmin, deleteJob)
 

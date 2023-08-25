@@ -62,6 +62,8 @@ exports.createJob = async(req, res) => {
             }
         )
 
+        // send mail
+
         return res.status(200).json({
             success: true,
             message: "Job created successfully",
@@ -147,14 +149,12 @@ exports.updateJob = async(req, res) => {
 
 exports.getJobs = async(req, res) => {
     try{
-        // find by id
-        const id = req.user.id
-        let userDetails = await User.findById(id).populate('jobs').exec()
+        let jobs = await Job.find({})
 
         res.status(200).json({
 			success: true,
-			message: `All jobs created by ${userDetails.firstName} ${userDetails.lastName}`,
-			jobs: userDetails.jobs,
+			message: `All jobs are listed`,
+			jobs,
 		});
 
     } catch(error){

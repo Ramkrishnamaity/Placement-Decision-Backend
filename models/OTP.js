@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose');
 const mailSender = require('../utils/mailSender');
+const otpTemplate = require('../mailTemplates/EmailVerificationMail')
 
 // define schema for otp model
 const otpSchema = new mongoose.Schema(
@@ -21,24 +22,29 @@ const otpSchema = new mongoose.Schema(
         }
     }
 )
-
-// create a pre hook for mail send
-otpSchema.pre("save", async function(next){
-    try{
-        const response = await mailSender(
+// Define a function to send emails
+async function sendVerificationEmail(email, otp) {
+    try {
+        await mailSender(
             email,
             "Verification Email from PlacementDecision",
-            otp
+            otpTemplate(otp)
         )
-        console.log("mail response", response)
-        next()
-    } catch(error){
-        return res.status(500).json({
-            success: false,
-            message: "Error while sending verification mail."
-        })
+    } catch (error) {
+      throw error
     }
-})
+}
+
+
+// create a pre hook for mail send
+otpSchema.pre("save", async function (next) {
+    // Only send an email when a new document is created
+    if (this.isNew) {
+      await sendVerificationEmail(this.email, this.otp);
+    }
+    next();
+});
+
 
 // export model after model creation
 module.exports = mongoose.model('OTP', otpSchema)

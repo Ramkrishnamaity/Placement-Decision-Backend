@@ -7,6 +7,8 @@ const Profile = require('../models/Profile')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const otpGenerator = require('otp-generator')
+const {passwordUpdated} = require('../mailTemplates/PasswordChangeMail')
+const mailSender = require('../utils/mailSender')
 
 // load env data into process obj
 require('dotenv').config()
@@ -87,7 +89,7 @@ exports.signup = async(req, res) => {
             firstName,
             lastName,
             email,
-            password,
+            password: hashedPassword,
             image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
             profile: profileDetails._id
         })
@@ -97,14 +99,13 @@ exports.signup = async(req, res) => {
 
         return res.status(200).json({
             success: true,
-            user,
             message: "User registered successfully",
         })
 
     } catch(error){
         return res.status(500).json({
 			success: false,
-			message: `due to: ${error.message} , User cannot be registered. Please try again.`,
+			message: `User cannot be registered. Please try again.`,
 		});
     }
 }
@@ -152,13 +153,12 @@ exports.login = async(req, res) => {
             user.password = undefined
 
             const cookieOptions = {
-                expires: (Date.now() +  3 * 24 * 60 * 60 * 1000),
+                expires: new Date(Date.now() +  3 * 24 * 60 * 60 * 1000),
                 httpOnly: true 
             }
             // create a cookie
             res.cookie("token", token, cookieOptions).status(200).json({
 				success: true,
-				user,
 				message: `User Login Successfully`,
 			});
 
@@ -229,8 +229,15 @@ exports.changePassword = async(req, res) => {
 
         const {oldPassword, newPassword, confirmNewPassword} = req.body
 
+
+        // Validate old password
+		const isPasswordMatch = await bcrypt.compare(
+			oldPassword,
+			userDetails.password
+		);
+        
         // match user's password 
-        if(!await bcrypt.compare(oldPassword, userDetails.password)){
+        if(!isPasswordMatch){
             return res.status(401).json({
                 success: false,
                 message: "Password is incorrect."
@@ -245,22 +252,24 @@ exports.changePassword = async(req, res) => {
             })
         }
 
-        let hashedPassword = bcrypt.hash(newPassword, 10)
-
-        // update on db
-        await User.findByIdAndUpdate(userDetails._id, {password: hashedPassword}, {new: true})
+        const encryptedPassword = await bcrypt.hash(newPassword, 10);
+		
+        await User.findByIdAndUpdate(
+			req.user.id,
+			{ password: encryptedPassword },
+			{ new: true }
+		);
 
         // send a notification mail
         try{
-            const response = await mailSender(
+            const response = await mailSender( 
                 userDetails.email,
                 "Notification Email from PlacementDecision",
-                `Password updated successfully for ${userDetails.firstName} ${userDetails.lastName}`
+                passwordUpdated(userDetails.email, userDetails.firstName)
             )
-            console.log("mail response", response)
         } catch(error){
             return res.status(500).json({
-                success: false,
+                success: true,
                 message: "Error occur while sending notification mail."
             })
         }

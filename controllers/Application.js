@@ -6,6 +6,7 @@ const User = require('../models/User')
 const Job = require('../models/Job')
 const Application = require('../models/Application')
 const { imageUpload } = require('../utils/imageUploader')
+const {jobApplyEmail} = require('../mailTemplates/JobApplyMail')
 
 
 exports.createApplication = async(req, res) => {
@@ -74,7 +75,7 @@ exports.createApplication = async(req, res) => {
             const response = await mailSender(
                 user.email,
                 "Notification Email from PlacementDecision",
-                `You have successfully submit job application for ${job.companyName}`
+                jobApplyEmail(job.companyName, `${user.firstName} ${user.lastName}`)
             )
             console.log("mail response", response)
         } catch(error){

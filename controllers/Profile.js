@@ -20,20 +20,19 @@ exports.updateProfile = async(req, res) => {
         const userDetails = await User.findById(id)
         let profileDetails = await Profile.findById(userDetails.profile)
 
-        profileDetails.gender = gender
-        profileDetails.dateOfBirth = dateOfBirth
-        profileDetails.about = about
-        profileDetails.contactNumber = contactNumber
-        profileDetails.city = city
-        profileDetails.state = state
+        if(gender) profileDetails.gender = gender
+        if(dateOfBirth) profileDetails.dateOfBirth = dateOfBirth
+        if(about) profileDetails.about = about
+        if(contactNumber) profileDetails.contactNumber = contactNumber
+        if(city) profileDetails.city = city
+        if(state) profileDetails.state = state
 
         // save the document
         await profileDetails.save()
 
         return res.status(200).json({
 			success: true,
-			message: "Profile updated successfully",
-			profileDetails,
+			message: "Profile updated successfully"
 		});
 
     } catch(error){
@@ -51,6 +50,13 @@ exports.deleteProfile = async(req, res) => {
         const id = req.user.id
 
         const userDetails = await User.findById(id)
+
+        if(userDetails.accountType === "Admin"){
+            return res.status(400).json({
+                success: false,
+                message: "You cannot delete your Admin profile",
+            });
+        }
 
         // Delete Assosiated Profile with the User
         await Profile.findByIdAndDelete(userDetails.profile)
@@ -77,40 +83,20 @@ exports.getUserDetails = async(req, res) => {
     try{
         // find by id
         const id = req.user.id
-        let userDetails = await User.findById(id).populate('profile').exec()
+        let userDetails = await User.findById(id).populate('profile').populate('jobs').exec()
+
+        userDetails.password = undefined
 
         res.status(200).json({
 			success: true,
 			message: "User Data fetched successfully",
-			data: userDetails,
+			userDetails,
 		});
 
     } catch(error){
         return res.status(500).json({
 			success: false,
 			message: "Error occur while fetching user details",
-		});
-    }
-}
-
-
-
-exports.getAppliedJobs = async(req, res) => {
-    try{
-        // find by id
-        const id = req.user.id
-        let userDetails = await User.findById(id).populate('jobs').exec()
-
-        res.status(200).json({
-			success: true,
-			message: `All applied jobs by ${userDetails.firstName} ${userDetails.lastName}`,
-			jobs: userDetails.jobs,
-		});
-
-    } catch(error){
-        return res.status(500).json({
-			success: false,
-			message: "Error occur while fetching applied jobs",
 		});
     }
 }
@@ -142,6 +128,45 @@ exports.updateProfilePicture = async(req, res) => {
         return res.status(500).json({
 			success: false,
 			message: "Error occur while updating user's profile picture",
+		});
+    }
+}
+
+
+exports.getUsers = async(req, res) => {
+    try{
+        // fetch all users
+        let users = await User.find({})
+
+        let data = [];
+        // abtraction layer
+        users.map(async(user)=>{
+            let id = user.profile.toString()
+            const additionalData = await Profile.findById(id)
+
+            const obj = {
+                name : `${user.firstName} ${user.lastName}`,
+                email : user.email,
+                image : user.image,
+                contact: additionalData.contactNumber,
+                city: additionalData.city,
+                gender: additionalData.gender,
+            }
+
+            data.push(obj)
+        })
+
+        return res.status(200).json({
+			success: true,
+			message: "get users successfully",
+            data,
+		});
+
+
+    } catch(error){
+        return res.status(500).json({
+			success: false,
+			message: "Error occur while getting all user data",
 		});
     }
 }
