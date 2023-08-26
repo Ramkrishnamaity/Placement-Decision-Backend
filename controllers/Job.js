@@ -165,7 +165,23 @@ exports.getJobs = async(req, res) => {
     }
 }
 
+exports.getLatestJobs = async(req, res) => {
+    try{
+        let jobs = await Job.find({}).sort({createdAt: -1}).limit(3)
 
+        res.status(200).json({
+			success: true,
+			message: `All jobs are listed`,
+			jobs,
+		});
+
+    } catch(error){
+        return res.status(500).json({
+			success: false,
+			message: "Error occur while fetching recent jobs",
+		});
+    }
+}
 
 exports.deleteJob = async(req, res) => {
     try{

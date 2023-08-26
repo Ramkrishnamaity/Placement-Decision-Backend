@@ -24,6 +24,7 @@ const otpTemplate = (otp) => {
 			}
 	
 			.logo {
+				border-radius: 6px;
 				max-width: 200px;
 				margin-bottom: 20px;
 			}
@@ -67,7 +68,7 @@ const otpTemplate = (otp) => {
 	<body>
 		<div class="container">
 			<a href="https://studynotion-edtech-project.vercel.app"><img class="logo"
-					src="https://i.ibb.co/7Xyj3PC/logo.png" alt="Placement Logo"></a>
+					src="https://res.cloudinary.com/dtguuc4py/image/upload/v1693050712/PlacementDecision/companyLogo/ov0o6cev3zuwhv3c4ztw.png" alt="Placement Logo"></a>
 			<div class="message">OTP Verification Email</div>
 			<div class="body">
 				<p>Dear User,</p>

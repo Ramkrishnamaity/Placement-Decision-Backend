@@ -67,7 +67,7 @@ exports.jobApplyEmail = (jobName, name) => {
     
     <body>
         <div class="container">
-            <a href="https://studynotion-edtech-project.vercel.app"><img class="logo" src="https://i.ibb.co/7Xyj3PC/logo.png"
+            <a href="#"><img class="logo" src="https://res.cloudinary.com/dtguuc4py/image/upload/v1693050183/PlacementDecision/companyLogo/y5poabbfbw4l4grmki21.png"
                     alt="placement Logo"></a>
             <div class="message">Job Application Confirmation</div>
             <div class="body">

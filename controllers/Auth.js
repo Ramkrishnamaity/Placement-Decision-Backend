@@ -1,6 +1,7 @@
 //      **  signup, login, sendotp, change password controller    **      //
 
 // import required modules
+const Students = require('../models/FinalYearStudents')
 const User = require('../models/User')
 const OTP = require('../models/OTP')
 const Profile = require('../models/Profile')
@@ -47,15 +48,6 @@ exports.signup = async(req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Password and Confirm Password do not match. Please try again."
-            })
-        }
-
-        // check if user already exists
-        const existingUser = await User.findOne({email})
-        if(existingUser){
-            return res.status(400).json({
-                success: false,
-                message: "User already exists. Please sign in to continue."
             })
         }
 
@@ -187,6 +179,15 @@ exports.sendotp = async(req, res) => {
     try{
         // fetch the email
         const {email} = req.body
+
+        // // only this institute students can signup
+        // const flag = await Students.findOne({email: email})
+        // if(!flag){
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Only GMIT Students can signup."
+        //     })
+        // }
 
         // check if user already exists
         const existingUser = await User.findOne({email})

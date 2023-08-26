@@ -5,7 +5,7 @@ const router = express.Router()
 
 // import all required controllers and middlewares
 const {auth, isAdmin} = require('../middlewares/AuthZ')
-const { createJob, getJobs, deleteJob , updateJob} = require('../controllers/Job')
+const { createJob, getJobs, deleteJob , updateJob, getLatestJobs} = require('../controllers/Job')
 
 
 
@@ -16,6 +16,8 @@ router.post('/createJob', auth, isAdmin, createJob)
 router.put('/updateJob', updateJob)
 
 router.get('/getJobs', auth, getJobs)
+
+router.get('/getLatestJobs', getLatestJobs)
 
 router.delete('/deleteJob', auth, isAdmin, deleteJob)
 
