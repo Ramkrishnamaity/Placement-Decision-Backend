@@ -46,6 +46,9 @@ exports.createJob = async(req, res) => {
         // upload the company logo into cloudinary
         const responce = await imageUpload(logo, process.env.LOGO_FOLDER)
 
+        // separate tags
+        const skills = tags.split(" ")
+
         // create job document 
         await Job.create(
             {
@@ -54,7 +57,7 @@ exports.createJob = async(req, res) => {
                 logo: responce.secure_url,
                 jobType,
                 description,
-                tags,
+                tags: skills,
                 location,
                 package,
                 vacancie,
@@ -93,42 +96,22 @@ exports.updateJob = async(req, res) => {
             lastDate
 
         } = req.body
-        const logo = req.files.companyLogo
+
+        // separate tags
+        const skills = tags.split(" ")
+
+
         const jobDetails = await Job.findById(jobId)
 
-        // if there was a unfilled value
-        if(
-            !jobId ||
-            !category ||
-            !companyName ||
-            !jobType ||
-            !description ||
-            !tags ||
-            !location ||
-            !package ||
-            !vacancie ||
-            !lastDate ||
-            !logo
-        ){
-            return res.status(401).json({
-                success: false,
-                message: "All fields are required."
-            })
-        }
-
-        // upload the company logo into cloudinary
-        const responce = await imageUpload(logo, process.env.LOGO_FOLDER)
-
-        jobDetails.category = category
-        jobDetails.companyName = companyName
-        jobDetails.jobType = jobType,
-        jobDetails.description = description
-        jobDetails.tags = tags
-        jobDetails.location = location
-        jobDetails.package = package
-        jobDetails.vacancie = vacancie
-        jobDetails.lastDate = lastDate
-        jobDetails.logo = responce.secure_url
+        if(category) jobDetails.category = category
+        if(companyName) jobDetails.companyName = companyName
+        if(jobType) jobDetails.jobType = jobType
+        if(description) jobDetails.description = description
+        if(tags) jobDetails.tags = skills
+        if(location) jobDetails.location = location
+        if(package) jobDetails.package = package
+        if(vacancie) jobDetails.vacancie = vacancie
+        if(lastDate) jobDetails.lastDate = lastDate
         
 
         // save the document
@@ -183,19 +166,27 @@ exports.getLatestJobs = async(req, res) => {
     }
 }
 
+
 exports.deleteJob = async(req, res) => {
     try{
         // fetch job id
-        const jobId = req.body
-        // const jobDeatils = await Job.findById(jobId)
+        const {id} = req.params
 
+        // job existance
+        const isExist = await Job.findById(id)
+        if(!isExist){
+            return res.status(401).json({
+                success: false,
+                message: "Job does't exist."
+            }) 
+        }
 
         // Delete Assosiated  applications and appliedjob section of user  ?? with the job
-        await Application.deleteMany({jobId: jobId})
+        await Application.deleteMany({jobId: id})
 
         await User.updateMany(
-            {jobs: jobId},
-            {$pull: {jobId}}
+            {jobs: id},
+            {$pull: {jobs: id}}
         )
 
         // now delete the job
@@ -210,6 +201,7 @@ exports.deleteJob = async(req, res) => {
     } catch(error){
         return res.status(500).json({
 			success: false,
+            error: error.message,
 			message: "Error occur while deleting job",
 		});
     }

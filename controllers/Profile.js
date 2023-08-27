@@ -136,30 +136,25 @@ exports.updateProfilePicture = async(req, res) => {
 exports.getUsers = async(req, res) => {
     try{
         // fetch all users
-        let users = await User.find({})
+        let users = await User.find({}).populate('profile').exec()
 
-        let data = [];
-        // abtraction layer
-        users.map(async(user)=>{
-            let id = user.profile.toString()
-            const additionalData = await Profile.findById(id)
-
-            const obj = {
-                name : `${user.firstName} ${user.lastName}`,
-                email : user.email,
-                image : user.image,
-                contact: additionalData.contactNumber,
-                city: additionalData.city,
-                gender: additionalData.gender,
+        // remove passwords from data
+        users.map((user, index) => {
+            // remove admin
+            if(user.accountType === "Admin"){
+                users.splice(index, 1)
+                return
             }
-
-            data.push(obj)
+            user.password = undefined,
+            user.jobs = undefined
         })
+
+
 
         return res.status(200).json({
 			success: true,
 			message: "get users successfully",
-            data,
+            users,
 		});
 
 

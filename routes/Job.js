@@ -13,13 +13,13 @@ const { createJob, getJobs, deleteJob , updateJob, getLatestJobs} = require('../
 
 router.post('/createJob', auth, isAdmin, createJob)
 
-router.put('/updateJob', updateJob)
+router.put('/updateJob',auth, isAdmin, updateJob)
 
 router.get('/getJobs', auth, getJobs)
 
 router.get('/getLatestJobs', getLatestJobs)
 
-router.delete('/deleteJob', auth, isAdmin, deleteJob)
+router.delete('/deleteJob/:id', auth, isAdmin, deleteJob)
 
 
 // export router for use in main application

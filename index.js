@@ -16,7 +16,6 @@ const profileRoutes = require('./routes/Profile')
 const jobRoutes = require('./routes/Job')
 const applicationRoutes = require('./routes/Application')
 const studentRoutes = require('./routes/Students')
-const testiRoutes = require('./routes/Testimonials')
 
 // db conection & cloudinary connection
 connectDB()
@@ -33,7 +32,6 @@ app.use(
 )
 
 // routes
-app.use('/api/v1/testimonials', testiRoutes)
 app.use('/api/v1/students', studentRoutes)
 app.use('/api/v1/auth', userRoutes)
 app.use('/api/v1/profile', profileRoutes)

@@ -180,14 +180,14 @@ exports.sendotp = async(req, res) => {
         // fetch the email
         const {email} = req.body
 
-        // // only this institute students can signup
-        // const flag = await Students.findOne({email: email})
-        // if(!flag){
-        //     return res.status(400).json({
-        //         success: false,
-        //         message: "Only GMIT Students can signup."
-        //     })
-        // }
+        // only this institute students can signup
+        const flag = await Students.findOne({email: email})
+        if(!flag){
+            return res.status(400).json({
+                success: false,
+                message: "Only GMIT Students can signup."
+            })
+        }
 
         // check if user already exists
         const existingUser = await User.findOne({email})

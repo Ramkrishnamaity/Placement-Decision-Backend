@@ -10,7 +10,7 @@ const {getAllStudents, addStudent, deleteStudent} = require('../controllers/Stud
 
 // map these with related routes
 
-router.get('/getAllStudents', auth, getAllStudents)
+router.get('/getAllStudents', auth, isAdmin,  getAllStudents)
 
 router.post('/addStudent', auth, isAdmin, addStudent)
 

@@ -68,7 +68,7 @@ exports.jobNotificationMail = (jobName, name) => {
       
       <body>
           <div class="container">
-              <a href="#"><img class="logo" src="https://res.cloudinary.com/dtguuc4py/image/upload/v1693050183/PlacementDecision/companyLogo/y5poabbfbw4l4grmki21.png"
+              <a href="#"><img class="logo" src="https://res.cloudinary.com/dtguuc4py/image/upload/v1693050712/PlacementDecision/companyLogo/ov0o6cev3zuwhv3c4ztw.png"
                       alt="placement Logo"></a>
               <div class="message">Job Application Confirmation</div>
               <div class="body">

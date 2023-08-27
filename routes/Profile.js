@@ -19,8 +19,6 @@ router.get('/getUserDetails', auth, getUserDetails)
 
 router.put('/updateProfilePicture', auth, updateProfilePicture)
 
-
-//  `               *****???????
 router.get('/getUsers', auth, isAdmin, getUsers)
 
 

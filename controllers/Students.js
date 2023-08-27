@@ -22,6 +22,7 @@ exports.getAllStudents = async(req, res) => {
         }) 
     }
 }
+
 exports.addStudent = async(req, res) => {
     try{
         // get email
@@ -40,6 +41,7 @@ exports.addStudent = async(req, res) => {
         }) 
     }
 }
+
 exports.deleteStudent = async(req, res) => {
     try{
         // get email

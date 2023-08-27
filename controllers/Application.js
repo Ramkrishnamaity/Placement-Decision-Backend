@@ -7,12 +7,13 @@ const Job = require('../models/Job')
 const Application = require('../models/Application')
 const { imageUpload } = require('../utils/imageUploader')
 const {jobApplyEmail} = require('../mailTemplates/JobApplyMail')
+const mailSender = require('../utils/mailSender')
 
 
 exports.createApplication = async(req, res) => {
     try{
         // get id and fetch the application details
-        const uid = req.user.uid
+        const uid = req.user.id
         const {
             jobId,
             name,
@@ -25,7 +26,9 @@ exports.createApplication = async(req, res) => {
             secondary,
             higher,
         } = req.body
-        const resume = req.files.resume
+        const resume = req.files?.resume
+
+
 
         // if there was a unfilled value
         if(
@@ -38,11 +41,21 @@ exports.createApplication = async(req, res) => {
             !year ||
             !cgpa ||
             !secondary ||
-            !higher
+            !higher || 
+            !resume
         ){
             return res.status(401).json({
                 success: false,
                 message: "All fields are required."
+            })
+        }
+
+        // check if user already apply
+        const isApply = await Application.findOne({uid: uid, jobId: jobId})
+        if(isApply){
+            return res.status(400).json({
+                success: false,
+                message: "User already applied"
             })
         }
 
@@ -52,6 +65,7 @@ exports.createApplication = async(req, res) => {
         // create application document 
         const responce = await Application.create({
             jobId,
+            uid,
             name,
             email,
             rollNo,
@@ -68,16 +82,16 @@ exports.createApplication = async(req, res) => {
         const job = await Job.findByIdAndUpdate(jobId, {$push : {applications: responce._id}}, {new: true})
 
         // update applied jobs array of user
-        const user = await User.findByIdAndUpdate(uid, {$push: {jobs: jobId}}, {new: true})
+        const user = await User.findByIdAndUpdate(uid, {$push: {jobs: job._id}}, {new: true})
 
+        console.log()
         // send a notification mail
         try{
             const response = await mailSender(
                 user.email,
                 "Notification Email from PlacementDecision",
-                jobApplyEmail(job.companyName, `${user.firstName} ${user.lastName}`)
+                jobApplyEmail(job.companyName, user.firstName)
             )
-            console.log("mail response", response)
         } catch(error){
             return res.status(500).json({
                 success: false,
@@ -93,7 +107,8 @@ exports.createApplication = async(req, res) => {
     } catch(error){
         return res.status(500).json({
 			success: false,
-			message: `due to: ${error.message} , job application cannot created, Please try again later.`,
+            error: error.message,
+			message: `job application cannot created, Please try again later.`,
 		});
     }
 }
@@ -101,7 +116,7 @@ exports.createApplication = async(req, res) => {
 exports.getAllApplications = async(req, res) => {
     try{
         // get job id 
-        const jobId = req.body
+        const {jobId} = req.body
 
         // fetch job applications
         const jobDetails = await Job.findById(jobId).populate('applications').exec()
