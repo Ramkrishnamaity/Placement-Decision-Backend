@@ -19,6 +19,7 @@ const jobSchema = new mongoose.Schema(
         },
         jobType: {
             type: String,
+            enum: ["Onsite", "Hybrid", "Remote"],
             trim: true,
         },
         description: {

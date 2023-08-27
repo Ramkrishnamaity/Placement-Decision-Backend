@@ -13,7 +13,7 @@ require('dotenv').config()
 exports.updateProfile = async(req, res) => {
     try{
         // fetch profile data to be insert
-        const {gender, dateOfBirth, about, contactNumber, city, state} = req.body
+        const {gender, dateOfBirth,dept, about, contactNumber, city, state} = req.body
         const id = req.user.id
 
         // find that user using this id
@@ -21,6 +21,7 @@ exports.updateProfile = async(req, res) => {
         let profileDetails = await Profile.findById(userDetails.profile)
 
         if(gender) profileDetails.gender = gender
+        if(dept) profileDetails.gender = dept
         if(dateOfBirth) profileDetails.dateOfBirth = dateOfBirth
         if(about) profileDetails.about = about
         if(contactNumber) profileDetails.contactNumber = contactNumber
@@ -138,15 +139,19 @@ exports.getUsers = async(req, res) => {
         // fetch all users
         let users = await User.find({}).populate('profile').exec()
 
-        // remove passwords from data
-        users.map((user, index) => {
+        users.map((user, index)=>{
             // remove admin
             if(user.accountType === "Admin"){
                 users.splice(index, 1)
                 return
             }
+        })
+
+        // remove passwords from data
+        users.map((user) => {
             user.password = undefined,
             user.jobs = undefined
+            
         })
 
 

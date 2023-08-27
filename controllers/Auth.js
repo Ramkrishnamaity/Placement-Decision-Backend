@@ -69,6 +69,7 @@ exports.signup = async(req, res) => {
         // create profile for the user
         const profileDetails = await Profile.create({
             gender: null,
+            dept: null,
             dateOfBirth: null,
             about: null,
             contactNumber: null,

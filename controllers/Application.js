@@ -18,6 +18,7 @@ exports.createApplication = async(req, res) => {
             jobId,
             name,
             email,
+            dept,
             rollNo,
             regNo,
             semester,
@@ -36,6 +37,7 @@ exports.createApplication = async(req, res) => {
             !name ||
             !email ||
             !rollNo ||
+            !dept ||
             !regNo ||
             !semester ||
             !year ||
@@ -69,6 +71,7 @@ exports.createApplication = async(req, res) => {
             name,
             email,
             rollNo,
+            dept,
             regNo,
             semester,
             year,

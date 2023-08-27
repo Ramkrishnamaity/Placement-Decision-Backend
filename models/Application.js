@@ -25,6 +25,11 @@ const applicationSchema = new mongoose.Schema(
             trim: true,
             required: true,
         },
+        dept:{
+            type: String,
+            trim: true,
+            required: true,
+        },
         rollNo:{
             type: Number,
             required: true,

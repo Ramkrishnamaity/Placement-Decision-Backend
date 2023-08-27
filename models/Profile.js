@@ -9,6 +9,9 @@ const profileSchema = new mongoose.Schema(
             type: String,
             default: "GMIT"
         },
+        dept: {
+            type: String,
+        },
         gender: {
             type: String,
         },
