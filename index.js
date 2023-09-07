@@ -16,6 +16,7 @@ const profileRoutes = require('./routes/Profile')
 const jobRoutes = require('./routes/Job')
 const applicationRoutes = require('./routes/Application')
 const studentRoutes = require('./routes/Students')
+const cors = require('cors')
 
 // db conection & cloudinary connection
 connectDB()
@@ -28,6 +29,12 @@ app.use(
     fileUpload({
         useTempFiles: true,
         tempFileDir: "/tmp"
+    })
+)
+app.use(
+    cors({
+        origin:"*",
+        credentials:true,
     })
 )
 

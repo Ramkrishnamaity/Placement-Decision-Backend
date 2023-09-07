@@ -91,7 +91,7 @@ exports.getUserDetails = async(req, res) => {
         res.status(200).json({
 			success: true,
 			message: "User Data fetched successfully",
-			userDetails,
+			data: userDetails,
 		});
 
     } catch(error){
@@ -113,16 +113,18 @@ exports.updateProfilePicture = async(req, res) => {
         const responce = await imageUpload(image, process.env.PICTURE_FOLDER)
 
         // update it on user document
-        await User.findByIdAndUpdate(
-            id,
+        const user = await User.findByIdAndUpdate(
+            { _id: id },
             {
                 image: responce.secure_url
-            }
+            },
+            { new: true }
         )
 
-        res.send({
+        res.json({
             success: true,
             message: `Image Updated successfully`,
+            user
         })
 
     } catch(error){

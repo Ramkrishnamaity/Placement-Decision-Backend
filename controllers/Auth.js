@@ -147,12 +147,13 @@ exports.login = async(req, res) => {
 
             const cookieOptions = {
                 expires: new Date(Date.now() +  3 * 24 * 60 * 60 * 1000),
-                httpOnly: true 
+                httpOnly: true
             }
             // create a cookie
             res.cookie("token", token, cookieOptions).status(200).json({
 				success: true,
 				message: `User Login Successfully`,
+                token
 			});
 
 
@@ -229,7 +230,7 @@ exports.changePassword = async(req, res) => {
         // fetch user details
         const userDetails = await User.findById(req.user.id)
 
-        const {oldPassword, newPassword, confirmNewPassword} = req.body
+        const {oldPassword, newPassword} = req.body
 
 
         // Validate old password
@@ -246,20 +247,11 @@ exports.changePassword = async(req, res) => {
             })
         }
 
-        // match new passwords
-        if(newPassword !== confirmNewPassword){
-            return res.status(401).json({
-                success: false,
-                message: "The password and confirm password does not match."
-            })
-        }
-
         const encryptedPassword = await bcrypt.hash(newPassword, 10);
 		
         await User.findByIdAndUpdate(
 			req.user.id,
-			{ password: encryptedPassword },
-			{ new: true }
+			{ password: encryptedPassword }
 		);
 
         // send a notification mail
