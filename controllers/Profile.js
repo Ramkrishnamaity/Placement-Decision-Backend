@@ -13,27 +13,38 @@ require('dotenv').config()
 exports.updateProfile = async(req, res) => {
     try{
         // fetch profile data to be insert
-        const {gender, dateOfBirth,dept, about, contactNumber, city, state} = req.body
+        const {firstName, lastName, gender, dateOfBirth, about, contactNumber, city, state} = req.body
         const id = req.user.id
 
+        console.log("first")
         // find that user using this id
         const userDetails = await User.findById(id)
         let profileDetails = await Profile.findById(userDetails.profile)
 
-        if(gender) profileDetails.gender = gender
-        if(dept) profileDetails.gender = dept
-        if(dateOfBirth) profileDetails.dateOfBirth = dateOfBirth
-        if(about) profileDetails.about = about
-        if(contactNumber) profileDetails.contactNumber = contactNumber
-        if(city) profileDetails.city = city
-        if(state) profileDetails.state = state
+        userDetails.firstName = firstName
+        userDetails.lastName = lastName
 
-        // save the document
+        profileDetails.gender = gender
+        profileDetails.dateOfBirth = dateOfBirth
+        profileDetails.about = about
+        profileDetails.contactNumber = contactNumber
+        profileDetails.city = city
+        profileDetails.state = state
+
+        // save the profile document
         await profileDetails.save()
+        // save the user document
+        await userDetails.save()
+
+        // Find the updated user details
+        const userD = await User.findById(id)
+        .populate("profile")
+        .exec()
 
         return res.status(200).json({
 			success: true,
-			message: "Profile updated successfully"
+			message: "Profile updated successfully",
+            userD
 		});
 
     } catch(error){
@@ -53,7 +64,7 @@ exports.deleteProfile = async(req, res) => {
         const userDetails = await User.findById(id)
 
         if(userDetails.accountType === "Admin"){
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "You cannot delete your Admin profile",
             });

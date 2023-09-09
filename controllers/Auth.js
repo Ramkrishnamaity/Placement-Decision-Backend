@@ -37,7 +37,7 @@ exports.signup = async(req, res) => {
             !confirmPassword ||
             !otp
         ){
-            return res.status(403).json({
+            return res.json({
                 success: false,
                 message: "All Fields are required."
             })
@@ -45,7 +45,7 @@ exports.signup = async(req, res) => {
 
         // check if password and confirm password did not match
         if(password !== confirmPassword){
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "Password and Confirm Password do not match. Please try again."
             })
@@ -56,7 +56,7 @@ exports.signup = async(req, res) => {
         // Find the most recent OTP for the email
         const response = await OTP.find({email}).sort({createdAt: -1}).limit(1)   // ???
         if(response.length === 0 || otp !== response[0].otp){
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "The OTP is not valid",
             })
@@ -96,7 +96,7 @@ exports.signup = async(req, res) => {
         })
 
     } catch(error){
-        return res.status(500).json({
+        return res.json({
 			success: false,
 			message: `User cannot be registered. Please try again.`,
 		});
@@ -111,7 +111,7 @@ exports.login = async(req, res) => {
 
         // check if any details is null
         if(!email || !password){
-            return res.status(403).json({
+            return res.json({
                 success: false,
                 message: "All Fields are required."
             })
@@ -121,7 +121,7 @@ exports.login = async(req, res) => {
         const user = await User.findOne({email})
 
         if(!user){
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "User not registered. Please sign up to continue."
             })
@@ -147,10 +147,10 @@ exports.login = async(req, res) => {
 
             const cookieOptions = {
                 expires: new Date(Date.now() +  3 * 24 * 60 * 60 * 1000),
-                httpOnly: true
+                httpOnly: true,
             }
             // create a cookie
-            res.cookie("token", token, cookieOptions).status(200).json({
+            res.status(200).cookie("token", token, cookieOptions).json({
 				success: true,
 				message: `User Login Successfully`,
                 token
@@ -158,7 +158,7 @@ exports.login = async(req, res) => {
 
 
         } else{
-            return res.status(401).json({
+            return res.json({
                 success: false,
                 message: "Password is incorrect."
             })
@@ -168,7 +168,7 @@ exports.login = async(req, res) => {
 
     } catch(error){
         console.log(error.message)     
-        return res.status(500).json({
+        return res.json({
 			success: false,
 			message: `Login Failure Please Try Again`,
 		});
@@ -181,24 +181,24 @@ exports.sendotp = async(req, res) => {
     try{
         // fetch the email
         const {email} = req.body
-
-        // only this institute students can signup
-        const flag = await Students.findOne({email: email})
-        if(!flag){
-            return res.status(400).json({
-                success: false,
-                message: "Only GMIT Students can signup."
-            })
-        }
-
+        
         // check if user already exists
         const existingUser = await User.findOne({email})
         if(existingUser){
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "User already exists. Please sign in to continue."
             })
         }
+        // only this institute students can signup
+        const flag = await Students.findOne({email: email})
+        if(!flag){
+            return res.json({
+                success: false,
+                message: "Only CTC Registered Students can join."
+            })
+        }
+
 
         // otp generate
         const otp = otpGenerator.generate(6,{
@@ -217,7 +217,7 @@ exports.sendotp = async(req, res) => {
 
 
     } catch(error){
-        return res.status(500).json({
+        return res.json({
             success: false,
             message: error.message
         })
@@ -241,7 +241,7 @@ exports.changePassword = async(req, res) => {
         
         // match user's password 
         if(!isPasswordMatch){
-            return res.status(401).json({
+            return res.json({
                 success: false,
                 message: "Password is incorrect."
             })
@@ -262,7 +262,7 @@ exports.changePassword = async(req, res) => {
                 passwordUpdated(userDetails.email, userDetails.firstName)
             )
         } catch(error){
-            return res.status(500).json({
+            return res.json({
                 success: true,
                 message: "Error occur while sending notification mail."
             })
@@ -275,7 +275,7 @@ exports.changePassword = async(req, res) => {
 
 
     } catch(error){
-        return res.status(500).json({
+        return res.json({
             success: false,
             message: "Error occur while updating password."
         })

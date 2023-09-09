@@ -12,6 +12,7 @@ exports.createJob = async(req, res) => {
         // fetch job data
         const {
             category,
+            companyUrl,
             companyName,
             jobType,
             description,
@@ -22,7 +23,6 @@ exports.createJob = async(req, res) => {
             lastDate
 
         } = req.body
-        const logo = req.files.companyLogo
 
         // if there was a unfilled value
         if(
@@ -35,7 +35,7 @@ exports.createJob = async(req, res) => {
             !package ||
             !vacancie ||
             !lastDate ||
-            !logo
+            !companyUrl
         ){
             return res.status(401).json({
                 success: false,
@@ -44,17 +44,18 @@ exports.createJob = async(req, res) => {
         }
 
         // upload the company logo into cloudinary
-        const responce = await imageUpload(logo, process.env.LOGO_FOLDER)
+
+        const logo = `https://logo.clearbit.com/${companyUrl}`
 
         // separate tags
         const skills = tags.split(" ")
 
         // create job document 
-        await Job.create(
+        const jobD = await Job.create(
             {
                 category,
                 companyName,
-                logo: responce.secure_url,
+                logo,
                 jobType,
                 description,
                 tags: skills,
@@ -71,6 +72,7 @@ exports.createJob = async(req, res) => {
         return res.status(200).json({
             success: true,
             message: "Job created successfully",
+            jobD
         })
 
     } catch(error){
@@ -131,6 +133,35 @@ exports.updateJob = async(req, res) => {
     }
 }
 
+exports.getJob = async(req, res) => {
+    try{
+        const {jobId} = req.body
+        const job = await Job.findById(jobId)
+
+        const relatedJob = await Job.find({category: job.category}).limit(4)
+
+        Object.values(relatedJob).forEach((r, i)=>{
+            if(r._id !== job._id){
+                relatedJob.splice(i,1)
+            }
+        })
+
+        res.status(200).json({
+			success: true,
+			message: `job fetch successfully`,
+			job,
+            relatedJob
+		});
+
+    } catch(error){
+        return res.status(500).json({
+			success: false,
+			message: "Error occur while fetching job list",
+		});
+    }
+}
+
+
 exports.getJobs = async(req, res) => {
     try{
         let jobs = await Job.find({})
@@ -171,7 +202,7 @@ exports.getLatestJobs = async(req, res) => {
 exports.deleteJob = async(req, res) => {
     try{
         // fetch job id
-        const {id} = req.params
+        const {id} = req.body
 
         // job existance
         const isExist = await Job.findById(id)
