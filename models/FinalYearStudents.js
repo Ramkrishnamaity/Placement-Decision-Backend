@@ -2,6 +2,11 @@
 
 const mongoose = require('mongoose')
 
+function getSession(){
+    let year = new Date().getFullYear()
+    return new Date(`${year}-05-28`);
+}
+
 // define schema for model
 const studentSchema = new mongoose.Schema(
     {
@@ -9,7 +14,9 @@ const studentSchema = new mongoose.Schema(
             type:String,
             unique: true,
             required:true,
-        }
+            expires: getSession()
+        },
+        
     }
 )
 

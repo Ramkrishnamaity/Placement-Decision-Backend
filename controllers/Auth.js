@@ -127,6 +127,15 @@ exports.login = async(req, res) => {
             })
         }
 
+        // only this institute students can signup
+        const flag = await Students.findOne({email: email})
+        if(!flag){
+            return res.json({
+                success: false,
+                message: "Your CTC session expires register again to join us."
+            })
+        }
+
         // compare password
         if( await bcrypt.compare(password, user.password) ){
 

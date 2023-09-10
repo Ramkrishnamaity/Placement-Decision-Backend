@@ -5,6 +5,7 @@ const User = require('../models/User')
 const Profile = require('../models/Profile')
 const { imageUpload } = require('../utils/imageUploader')
 
+const Students = require('../models/FinalYearStudents')
 
 // load env data into process obj
 require('dotenv').config()
@@ -73,6 +74,8 @@ exports.deleteProfile = async(req, res) => {
         // Delete Assosiated Profile with the User
         await Profile.findByIdAndDelete(userDetails.profile)
 
+        await Students.findOneAndDelete({email: userDetails.email})
+
         // now delete the user
         await User.findByIdAndDelete(id)
 
@@ -130,7 +133,7 @@ exports.updateProfilePicture = async(req, res) => {
                 image: responce.secure_url
             },
             { new: true }
-        )
+        ).populate('profile').populate('jobs').exec()
 
         res.json({
             success: true,

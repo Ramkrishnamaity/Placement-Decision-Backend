@@ -4,7 +4,7 @@
 const User = require('../models/User')
 const Job = require('../models/Job')
 const Application = require('../models/Application')
-const { imageUpload } = require('../utils/imageUploader')
+const customCron = require('../cron')
 
 
 exports.createJob = async(req, res) => {
@@ -67,7 +67,7 @@ exports.createJob = async(req, res) => {
         )
 
         // send mail
-        
+        // customCron.sendMailToAllUser()
 
         return res.status(200).json({
             success: true,
@@ -136,15 +136,15 @@ exports.updateJob = async(req, res) => {
 exports.getJob = async(req, res) => {
     try{
         const {jobId} = req.body
-        const job = await Job.findById(jobId)
+        const job = await Job.findById(jobId).populate('applications').exec()
 
         const relatedJob = await Job.find({category: job.category}).limit(4)
 
-        Object.values(relatedJob).forEach((r, i)=>{
-            if(r._id !== job._id){
-                relatedJob.splice(i,1)
-            }
-        })
+        // Object.values(relatedJob).forEach((r, i)=>{
+        //     if(r._id === job._id){
+        //         relatedJob.splice(i,1)
+        //     }
+        // })
 
         res.status(200).json({
 			success: true,

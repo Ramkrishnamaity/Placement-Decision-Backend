@@ -25,12 +25,10 @@ exports.createApplication = async(req, res) => {
             year,
             cgpa,
             secondary,
-            higher,
+            higher
         } = req.body
-        const resume = req.files?.resume
 
-
-
+        const resume = req.files.resume
         // if there was a unfilled value
         if(
             !jobId ||
@@ -46,16 +44,18 @@ exports.createApplication = async(req, res) => {
             !higher || 
             !resume
         ){
-            return res.status(401).json({
+            return res.json({
                 success: false,
                 message: "All fields are required."
             })
         }
 
+        
+
         // check if user already apply
         const isApply = await Application.findOne({uid: uid, jobId: jobId})
         if(isApply){
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: "User already applied"
             })
@@ -64,6 +64,7 @@ exports.createApplication = async(req, res) => {
         // upload the resume into cloudinary
         const image = await imageUpload(resume, process.env.RESUME_FOLDER)
 
+       
         // create application document 
         const responce = await Application.create({
             jobId,
@@ -81,13 +82,13 @@ exports.createApplication = async(req, res) => {
             resume: image.secure_url,
         })
 
+
         // update on job document
         const job = await Job.findByIdAndUpdate(jobId, {$push : {applications: responce._id}}, {new: true})
 
         // update applied jobs array of user
-        const user = await User.findByIdAndUpdate(uid, {$push: {jobs: job._id}}, {new: true})
+        const user = await User.findByIdAndUpdate(uid, {$push: {jobs: job._id}}, {new: true}).populate('profile').populate('jobs').exec()
 
-        console.log()
         // send a notification mail
         try{
             const response = await mailSender(
@@ -96,8 +97,8 @@ exports.createApplication = async(req, res) => {
                 jobApplyEmail(job.companyName, user.firstName)
             )
         } catch(error){
-            return res.status(500).json({
-                success: false,
+            return res.json({
+                success: true,
                 message: "Error occur while sending notification mail."
             })
         }
@@ -105,6 +106,7 @@ exports.createApplication = async(req, res) => {
         return res.status(200).json({
             success: true,
             message: "Job Application created successfully",
+            user
         })
 
     } catch(error){
