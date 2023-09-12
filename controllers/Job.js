@@ -164,7 +164,15 @@ exports.getJob = async(req, res) => {
 
 exports.getJobs = async(req, res) => {
     try{
-        let jobs = await Job.find({})
+
+        const {category, tags, jobType} = req.query
+        let queryObject = {}
+
+        if(category) queryObject.category = category
+        if(jobType) queryObject.jobType = jobType
+        if(tags) queryObject.tags = {$regex: tags, $options: 'i'}
+
+        let jobs = await Job.find(queryObject)
 
         res.status(200).json({
 			success: true,

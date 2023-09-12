@@ -60,3 +60,11 @@ exports.deleteStudent = async(req, res) => {
         }) 
     }
 }
+
+exports.sendMail = async(req, res)=>{
+    try{
+    
+    } catch(error){
+
+    }
+}
