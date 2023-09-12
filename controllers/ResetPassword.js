@@ -34,7 +34,7 @@ exports.createResetToken = async(req, res) => {
         ) 
 
         // create link and sent it to user
-        let url = `http://localhost:3000/reset-password/${token}`
+        let url = `http://placement-decision/reset-password/${token}`
 
         await mailSender(
             email,

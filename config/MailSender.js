@@ -1,6 +1,7 @@
 //  **  nodemailer config set   **  //
 
 const nodemailer = require('nodemailer')
+require('dotenv').config()
 
 const configOptions = {
     host:process.env.MAIL_HOST,

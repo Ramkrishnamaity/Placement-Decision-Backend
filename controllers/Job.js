@@ -4,7 +4,7 @@
 const User = require('../models/User')
 const Job = require('../models/Job')
 const Application = require('../models/Application')
-const customCron = require('../cron')
+// const customCron = require('../cron')
 
 
 exports.createJob = async(req, res) => {
