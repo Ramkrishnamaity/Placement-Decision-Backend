@@ -50,6 +50,7 @@ exports.createResetToken = async(req, res) => {
 		});
 
     } catch(error){
+        console.log(error.message)
         return res.status(500).json({
 			success: false,
 			message: `Some Error in Sending the Reset Message`,

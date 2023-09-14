@@ -123,9 +123,8 @@ exports.updateProfilePicture = async(req, res) => {
         const image = req.files.profilePicture
         // find by id
         const id = req.user.id
-
+        
         const responce = await imageUpload(image, process.env.PICTURE_FOLDER)
-
         // update it on user document
         const user = await User.findByIdAndUpdate(
             { _id: id },
