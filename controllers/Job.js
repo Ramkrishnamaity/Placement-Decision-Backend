@@ -138,7 +138,7 @@ exports.getJob = async(req, res) => {
         const {jobId} = req.body
         const job = await Job.findById(jobId).populate('applications').exec()
 
-        const relatedJob = await Job.find({category: job.category}).limit(4)
+        const relatedJob = await Job.find({category: job.category}).limit(5)
 
         // Object.values(relatedJob).forEach((r, i)=>{
         //     if(r._id === job._id){
@@ -190,7 +190,7 @@ exports.getJobs = async(req, res) => {
 
 exports.getLatestJobs = async(req, res) => {
     try{
-        let jobs = await Job.find({}).sort({createdAt: -1}).limit(3)
+        let jobs = await Job.find({}).sort({createdAt: -1}).limit(4)
 
         res.status(200).json({
 			success: true,
