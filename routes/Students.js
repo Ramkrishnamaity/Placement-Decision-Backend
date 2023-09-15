@@ -16,7 +16,7 @@ router.post('/addStudent', auth, isAdmin, addStudent)
 
 router.delete('/deleteStudent', auth, isAdmin, deleteStudent)
 
-router.delete('/mail',  sendMail)
+router.post('/mail',  sendMail)
 
 
 // export router for use in main application

@@ -2,7 +2,7 @@ const otpTemplate = (otp) => {
 	return `<!DOCTYPE html>
 	<html>
 	
-	<head>
+	<head>  
 		<meta charset="UTF-8">
 		<title>OTP Verification Email</title>
 		<style>

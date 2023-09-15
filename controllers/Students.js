@@ -2,6 +2,7 @@
 
 // import required modules
 const Students = require('../models/FinalYearStudents')
+const mailSender = require("../utils/mailSender")
 
 
 exports.getAllStudents = async(req, res) => {
@@ -63,8 +64,19 @@ exports.deleteStudent = async(req, res) => {
 
 exports.sendMail = async(req, res)=>{
     try{
-    
-    } catch(error){
+        const {name, email, subject, message} = req.body
 
+        await mailSender(
+            'itsramkrishna33@gmail.com',
+            subject,
+            `Name: <h1>${name}</h1><br>Email: <p>${email}</p><br>Message: <p>${message}</p>`
+        )
+        res.status(200).json({
+            success:true,
+        })
+    } catch(error){
+        res.status(500).json({
+            success:false, 
+        })
     }
 }
