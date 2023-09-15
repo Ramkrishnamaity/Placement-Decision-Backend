@@ -3,8 +3,9 @@
 // import required modules
 const User = require('../models/User')
 const Job = require('../models/Job')
+const {jobNotificationMail} = require('../mailTemplates/JobNotificationMail')
 const Application = require('../models/Application')
-// const customCron = require('../cron')
+const mailSender = require("../utils/mailSender")
 
 
 exports.createJob = async(req, res) => {
@@ -67,7 +68,14 @@ exports.createJob = async(req, res) => {
         )
 
         // send mail
-        // customCron.sendMailToAllUser()
+        const users = await User.find({})
+        users.forEach(async(user)=>{
+            await mailSender(
+                user.email,
+                "Job Notification Mail",
+                jobNotificationMail(jobD.companyName, user.firstName)
+            )
+        })
 
         return res.status(200).json({
             success: true,
