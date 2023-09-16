@@ -7,13 +7,16 @@ const {jobNotificationMail} = require('../mailTemplates/JobNotificationMail')
 const Application = require('../models/Application')
 const mailSender = require("../utils/mailSender")
 
+const { imageUpload } = require('../utils/imageUploader')
+// load env data into process obj
+require('dotenv').config()
+
 
 exports.createJob = async(req, res) => {
     try{
         // fetch job data
         const {
             category,
-            companyUrl,
             companyName,
             jobType,
             description,
@@ -24,6 +27,7 @@ exports.createJob = async(req, res) => {
             lastDate
 
         } = req.body
+        const {companyLogo} = req.files
 
         // if there was a unfilled value
         if(
@@ -36,7 +40,7 @@ exports.createJob = async(req, res) => {
             !package ||
             !vacancie ||
             !lastDate ||
-            !companyUrl
+            !companyLogo
         ){
             return res.status(401).json({
                 success: false,
@@ -46,7 +50,7 @@ exports.createJob = async(req, res) => {
 
         // upload the company logo into cloudinary
 
-        const logo = `https://logo.clearbit.com/${companyUrl}`
+        const logo = await imageUpload(companyLogo, process.env.LOGO_FOLDER)
 
         // separate tags
         const skills = tags.split(" ")
