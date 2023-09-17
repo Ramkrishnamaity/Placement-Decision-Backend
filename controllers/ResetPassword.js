@@ -34,7 +34,7 @@ exports.createResetToken = async(req, res) => {
         ) 
 
         // create link and sent it to user
-        let url = `http://reset-password/${token}`
+        let url = `https://placement-decision-project.netlify.app/reset-password/${token}`
 
         await mailSender(
             email,

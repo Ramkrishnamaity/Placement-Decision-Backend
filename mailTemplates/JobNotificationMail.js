@@ -74,7 +74,7 @@ exports.jobNotificationMail = (jobName, name) => {
               <div class="body">
                   <p>Dear ${name},</p>
                   <p>We have add a new job opportunity from <span class="highlight">"${jobName}"</span>. Check
-                      it out from <a href="http://localhost:3000/Jobs/job">click here</a>
+                      it out from <a href="https://placement-decision-project.netlify.app/all-job">click here</a>
                   </p>
               </div>
               
