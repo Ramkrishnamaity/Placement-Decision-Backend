@@ -28,15 +28,15 @@ cloudConnect()
 app.use(express.json())
 app.use(cookieParser())
 app.use(
-    fileUpload({
-        useTempFiles: true,
-        tempFileDir: "/tmp"
-    })
-)
+	cors({
+		origin: "http://localhost:3000",
+		credentials: true,
+	})
+);
 app.use(
-    cors({
-        origin:"http://localhost:3000/",
-        credentials:true,
+    fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp"
     })
 )
 
