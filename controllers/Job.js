@@ -60,7 +60,7 @@ exports.createJob = async(req, res) => {
             {
                 category,
                 companyName,
-                logo,
+                logo: logo.secure_url,
                 jobType,
                 description,
                 tags: skills,
